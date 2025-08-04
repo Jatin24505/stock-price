@@ -1,0 +1,54 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Price Prediction</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f8f9fa;
+            text-align: center;
+        }
+        form {
+            margin-top: 50px;
+        }
+        input {
+            padding: 10px;
+            width: 200px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            border: none;
+            color: white;
+        }
+        img {
+            margin-top: 30px;
+            max-width: 90%;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .error {
+            color: red;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📈 Stock Price Prediction</h1>
+    <form method="POST">
+        <input type="text" name="ticker" placeholder="Enter Stock Ticker (e.g. AAPL)" required>
+        <button type="submit">Predict</button>
+    </form>
+    {% if plot_url %}
+        <h2>Predicted vs Actual Price for {{ ticker }}</h2>
+        <img src="{{ plot_url }}" alt="Prediction Plot">
+    {% endif %}
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+</body>
+</html>
