@@ -139,8 +139,7 @@ python-dotenv==1.1.1
 pyttsx3==2.99
 pytweening==1.2.0
 pytz==2025.2
-pywhatkit==5.4
-pywin32==311
+
 PyYAML==6.0.2
 pyzmq==27.0.1
 referencing==0.36.2
