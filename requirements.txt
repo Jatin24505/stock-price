@@ -1,5 +1,6 @@
 Flask==3.0.0
-pandas==2.1.4
+pandas>=2.2.2
+
 plotly==5.18.0
 yfinance==0.2.33
 numpy==1.26.2
