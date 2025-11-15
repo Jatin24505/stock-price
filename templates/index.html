@@ -1,54 +1,112 @@
-<!-- templates/index.html -->
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>Stock Price Prediction</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f8f9fa;
-            text-align: center;
-        }
-        form {
-            margin-top: 50px;
-        }
-        input {
-            padding: 10px;
-            width: 200px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #007BFF;
-            border: none;
-            color: white;
-        }
-        img {
-            margin-top: 30px;
-            max-width: 90%;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .error {
-            color: red;
-            margin-top: 20px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>Stock Price Dashboard — Interactive</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background:#f3f6f9; }
+    .container { margin-top: 18px; }
+    .kpi-card { border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); background:white; padding:16px; }
+    .kpi-value { font-size: 20px; font-weight:700; }
+    .kpi-title { font-size: 12px; color:#666; }
+    .controls { display:flex; gap:10px; align-items:center; justify-content:center; margin-bottom:12px; }
+    .plot-wrapper { background:white; padding:12px; border-radius:10px; box-shadow: 0 6px 18px rgba(0,0,0,0.04); }
+    .small-note { font-size:12px; color:#666; }
+  </style>
 </head>
 <body>
-    <h1>📈 Stock Price Prediction</h1>
-    <form method="POST">
-        <input type="text" name="ticker" placeholder="Enter Stock Ticker (e.g. AAPL)" required>
-        <button type="submit">Predict</button>
+  <div class="container">
+    <div class="text-center mb-3">
+      <h2>📈 Stock Price Dashboard</h2>
+      <p class="small-note">Interactive Plotly chart · PNG/CSV export · LSTM fallback to linear trend</p>
+    </div>
+
+    <form method="POST" class="mb-3 d-flex justify-content-center controls">
+      <div class="input-group" style="width:380px;">
+        <span class="input-group-text">Ticker</span>
+        <input class="form-control" name="ticker" placeholder="AAPL" value="{{ ticker }}">
+        <span class="input-group-text">Days</span>
+        <input class="form-control" name="days" type="number" min="1" max="60" value="{{ days }}">
+        <button class="btn btn-primary" type="submit">Predict</button>
+      </div>
     </form>
-    {% if plot_url %}
-        <h2>Predicted vs Actual Price for {{ ticker }}</h2>
-        <img src="{{ plot_url }}" alt="Prediction Plot">
+
+    {% if last_close_price is not none %}
+    <div class="row mb-3 justify-content-center">
+      <div class="col-auto">
+        <div class="kpi-card text-center">
+          <div class="kpi-title">Last Close Price</div>
+          <div class="kpi-value">₹ {{ last_close_price }}</div>
+        </div>
+      </div>
+
+      <div class="col-auto">
+        <div class="kpi-card text-center">
+          <div class="kpi-title">Last Month Avg</div>
+          <div class="kpi-value">₹ {{ last_month_avg }}</div>
+        </div>
+      </div>
+
+      <div class="col-auto">
+        <div class="kpi-card text-center">
+          <div class="kpi-title">Previous Month Avg</div>
+          <div class="kpi-value">
+            {% if prev_month_avg is not none %}
+              ₹ {{ prev_month_avg }}
+            {% else %}
+              N/A
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-auto">
+        <div class="kpi-card text-center">
+          <div class="kpi-title">Growth % (last vs prev)</div>
+          <div class="kpi-value">
+            {% if growth_pct is not none %}
+    {% set g = growth_pct|float %}
+    {% if g >= 0 %}
+        <span style="color:green;">▲ {{ g|round(2) }}%</span>
+    {% else %}
+        <span style="color:red;">▼ {{ g|round(2) }}%</span>
     {% endif %}
-    {% if error %}
-        <div class="error">{{ error }}</div>
+{% else %}
+    N/A
+{% endif %}
+
+          </div>
+        </div>
+      </div>
+
+      <div class="col-auto">
+        <div class="kpi-card text-center">
+          <div class="kpi-title">Forecast Method</div>
+          <div class="kpi-value">{{ forecast_method or "LinearTrend" }}</div>
+        </div>
+      </div>
+    </div>
     {% endif %}
+
+    {% if plot_div %}
+      <div class="plot-wrapper mb-3">
+        {{ plot_div | safe }}
+      </div>
+
+      <div class="d-flex gap-2 justify-content-center mb-4">
+        <a class="btn btn-success" href="{{ url_for('download_png') }}">⬇ Download PNG</a>
+        <a class="btn btn-secondary" href="{{ url_for('download_csv') }}">⬇ Download CSV</a>
+      </div>
+    {% endif %}
+
+    <div class="text-center small-note">
+      Tip: If you want model-based forecasts using your `lstm.py`, drop it in the same folder with a function:
+      <code>train_and_forecast(series_or_df, days=7)</code>
+      that returns a list/array of length `days`.
+    </div>
+  </div>
 </body>
 </html>
