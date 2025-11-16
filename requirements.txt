@@ -1,9 +1,8 @@
-Flask==3.1.1
+numpy==2.2.6
 pandas==2.3.1
+scikit-learn==1.7.1
+tensorflow==2.20.0
+keras==3.11.3
+Flask==3.1.1
 plotly==6.2.0
 yfinance==0.2.65
-numpy==2.2.6
-scikit-learn==1.7.1
-gunicorn (not in your list, needs to be added)
-kaleido (not in your list, for PNG export)
-Werkzeug==3.1.3
